@@ -27,11 +27,6 @@
       font-size: 40px;
       margin-top: 20px;
     }
-    .next-activity {
-      font-size: 25px;
-      margin-top: 30px;
-      color: #0f0;
-    }
   </style>
 </head>
 <body>
@@ -40,16 +35,12 @@
     <img id="activity-img" src="" alt="Actividad">
     <div class="activity-name" id="activity-name">Esperando rutina...</div>
   </div>
-  <div class="next-activity" id="next-activity"></div>
 
   <!-- Sonido de alarma -->
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
 
   <script>
-    let rutina = {};
-    let ultimaActividad = "";
-
-     // 🔹 Configura aquí tu rutina
+    // 🔹 Configura aquí tu rutina
     const rutina = {
       "06:45": { nombre: "Despertar", imagen: "Despertar.png" },
       "07:00": { nombre: "Vestirse", imagen: "Vestirse.png" },
@@ -57,7 +48,7 @@
       "08:00": { nombre: "Peinarse", imagen: "Peinarse.png" },
       "08:15": { nombre: "Zapatos y mochila", imagen: "Zapatos y mochila.png" },
       "08:20": { nombre: "Escuela", imagen: "Escuela.png" },
-      "11:25": { nombre: "Yoga", imagen: "Yoga.png" },
+      "11:30": { nombre: "Yoga", imagen: "Yoga.png" },
       "18:30": { nombre: "Cena", imagen: "Cena.png" },
       "19:00": { nombre: "Ducha", imagen: "Ducha.png" },
       "19:30": { nombre: "Historias", imagen: "Historias.png" },
@@ -73,67 +64,36 @@
       const segundos = String(ahora.getSeconds()).padStart(2, '0');
       const horaActual = `${horas}:${minutos}`;
 
+      // Mostrar la hora
       document.getElementById('clock').textContent = `${horas}:${minutos}:${segundos}`;
 
+      // Verificar si hay actividad a esta hora
       if (rutina[horaActual]) {
         const actividad = rutina[horaActual];
         document.getElementById('activity-name').textContent = actividad.nombre;
         document.getElementById('activity-img').src = actividad.imagen;
 
+        // Solo dispara la alarma si es una actividad nueva
         if (ultimaActividad !== horaActual) {
           reproducirAlarma();
           ultimaActividad = horaActual;
         }
       }
-
-      mostrarProximaActividad(ahora);
     }
 
     function reproducirAlarma() {
       const audio = document.getElementById('alarm-sound');
       audio.currentTime = 0;
       audio.play();
+
+      // Vibración en móviles (si está disponible)
       if ("vibrate" in navigator) {
         navigator.vibrate([500, 200, 500]);
       }
     }
 
-    function mostrarProximaActividad(ahora) {
-      const horasRutina = Object.keys(rutina).sort();
-      let siguiente = null;
-      for (let h of horasRutina) {
-        const [hh, mm] = h.split(":").map(Number);
-        const fechaActividad = new Date(ahora);
-        fechaActividad.setHours(hh, mm, 0, 0);
-        if (fechaActividad > ahora) {
-          siguiente = { hora: h, ...rutina[h] };
-          break;
-        }
-      }
-
-      const divNext = document.getElementById("next-activity");
-      if (siguiente) {
-        const [hh, mm] = siguiente.hora.split(":").map(Number);
-        const fechaActividad = new Date(ahora);
-        fechaActividad.setHours(hh, mm, 0, 0);
-        const diffMs = fechaActividad - ahora;
-        const diffMin = Math.floor(diffMs / 60000);
-        const diffH = Math.floor(diffMin / 60);
-        const diffM = diffMin % 60;
-        let tiempoRestante = "";
-        if (diffH > 0) tiempoRestante += `${diffH}h `;
-        tiempoRestante += `${diffM} min`;
-        divNext.textContent = `Próxima: ${siguiente.nombre} en ${tiempoRestante}`;
-      } else {
-        divNext.textContent = "No hay más actividades programadas hoy.";
-      }
-    }
-
-    // 🔹 Arranque
-    cargarRutina().then(() => {
-      setInterval(actualizarReloj, 1000);
-      actualizarReloj();
-    });
+    setInterval(actualizarReloj, 1000); // actualiza cada segundo
+    actualizarReloj();
   </script>
 </body>
 </html>
