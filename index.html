@@ -20,8 +20,8 @@
       margin-top: 40px;
     }
     .activity img {
-      max-width: 300px;
-      max-height: 300px;
+      max-width: 400px;
+      max-height: 400px;
     }
     .activity-name {
       font-size: 40px;
@@ -45,9 +45,20 @@
     .alarm-test-btn:hover {
       background: #fff600;
     }
+    #mensaje-clic {
+      background: #fff600;
+      color: #000;
+      padding: 10px;
+      font-size: 22px;
+      display: block;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
+  <div id="mensaje-clic">
+    Haz clic en cualquier parte para activar el sonido de la alarma.
+  </div>
   <div class="clock" id="clock">00:00:00</div>
 
   <!-- Botón para probar la alarma manualmente -->
@@ -71,13 +82,34 @@
       "08:00": { nombre: "Peinarse", imagen: "Peinarse.png" },
       "08:15": { nombre: "Zapatos y mochila", imagen: "Zapatos y mochila.png" },
       "08:20": { nombre: "Escuela", imagen: "Escuela.png" },
-      "11:52": { nombre: "Yoga", imagen: "Yoga.png" },
+      "11:58": { nombre: "Yoga", imagen: "Yoga.png" },
       "18:30": { nombre: "Cena", imagen: "Cena.png" },
       "19:00": { nombre: "Ducha", imagen: "Ducha.png" },
       "19:30": { nombre: "Historias", imagen: "Historias.png" },
       "20:00": { nombre: "Dormir", imagen: "Dormir.png" },
     };
     let ultimaActividad = "";
+
+    // Variable para saber si ya se desbloqueó el audio
+    let audioDesbloqueado = false;
+
+    function desbloquearAudio() {
+      if (!audioDesbloqueado) {
+        const audio = document.getElementById('alarm-sound');
+        audio.volume = 0; // volumen en silencio
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.volume = 1; // vuelve al volumen normal
+          audioDesbloqueado = true;
+          // Oculta el mensaje de clic
+          document.getElementById('mensaje-clic').style.display = 'none';
+        }).catch(() => {
+          // Si no se pudo reproducir, no pasa nada
+        });
+      }
+    }
+    document.addEventListener('click', desbloquearAudio);
 
     function actualizarReloj() {
       const ahora = new Date();
@@ -153,4 +185,3 @@
   </script>
 </body>
 </html>
-
