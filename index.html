@@ -46,10 +46,7 @@
   <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
 
   <script>
-    let rutina = {};
-    let ultimaActividad = "";
-
-     // 🔹 Configura aquí tu rutina
+    // 🔹 Configura aquí tu rutina
     const rutina = {
       "06:45": { nombre: "Despertar", imagen: "Despertar.png" },
       "07:00": { nombre: "Vestirse", imagen: "Vestirse.png" },
@@ -62,7 +59,6 @@
       "19:00": { nombre: "Ducha", imagen: "Ducha.png" },
       "19:30": { nombre: "Historias", imagen: "Historias.png" },
       "20:00": { nombre: "Dormir", imagen: "Dormir.png" },
-
     };
     let ultimaActividad = "";
 
@@ -130,10 +126,8 @@
     }
 
     // 🔹 Arranque
-    cargarRutina().then(() => {
-      setInterval(actualizarReloj, 1000);
-      actualizarReloj();
-    });
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
   </script>
 </body>
 </html>
