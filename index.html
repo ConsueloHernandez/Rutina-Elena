@@ -49,20 +49,22 @@
     let rutina = {};
     let ultimaActividad = "";
 
-    // 🔹 Cargar rutina desde CSV
-    async function cargarRutina() {
-      try {
-        const response = await fetch("rutina.csv");
-        const data = await response.text();
-        const lineas = data.trim().split("\n");
-        lineas.slice(1).forEach(l => {
-          const [hora, nombre, imagen] = l.split(",");
-          rutina[hora.trim()] = { nombre: nombre.trim(), imagen: imagen.trim() };
-        });
-      } catch (e) {
-        console.error("Error cargando rutina.csv:", e);
-      }
-    }
+     // 🔹 Configura aquí tu rutina
+    const rutina = {
+      "06:45": { nombre: "Despertar", imagen: "Despertar.png" },
+      "07:00": { nombre: "Vestirse", imagen: "Vestirse.png" },
+      "07:30": { nombre: "Desayunar", imagen: "Desayunar.png" },
+      "08:00": { nombre: "Peinarse", imagen: "Peinarse.png" },
+      "08:15": { nombre: "Zapatos y mochila", imagen: "Zapatos y mochila.png" },
+      "08:20": { nombre: "Escuela", imagen: "Escuela.png" },
+      "11:25": { nombre: "Yoga", imagen: "Yoga.png" },
+      "18:30": { nombre: "Cena", imagen: "Cena.png" },
+      "19:00": { nombre: "Ducha", imagen: "Ducha.png" },
+      "19:30": { nombre: "Historias", imagen: "Historias.png" },
+      "08:00": { nombre: "Dormir", imagen: "Dormir.png" },
+
+    };
+    let ultimaActividad = "";
 
     function actualizarReloj() {
       const ahora = new Date();
