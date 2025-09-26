@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reloj de Rutina</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .clock {
+      font-size: 80px;
+      margin-top: 30px;
+    }
+    .activity {
+      margin-top: 40px;
+    }
+    .activity img {
+      max-width: 300px;
+      max-height: 300px;
+    }
+    .activity-name {
+      font-size: 40px;
+      margin-top: 20px;
+    }
+    .next-activity {
+      font-size: 25px;
+      margin-top: 30px;
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clock">00:00:00</div>
+  <div class="activity">
+    <img id="activity-img" src="" alt="Actividad">
+    <div class="activity-name" id="activity-name">Esperando rutina...</div>
+  </div>
+  <div class="next-activity" id="next-activity"></div>
+
+  <!-- Sonido de alarma -->
+  <audio id="alarm-sound" src="alarma.mp3" preload="auto"></audio>
+
+  <script>
+    let rutina = {};
+    let ultimaActividad = "";
+
+    // 🔹 Cargar rutina desde CSV
+    async function cargarRutina() {
+      try {
+        const response = await fetch("rutina.csv");
+        const data = await response.text();
+        const lineas = data.trim().split("\n");
+        lineas.slice(1).forEach(l => {
+          const [hora, nombre, imagen] = l.split(",");
+          rutina[hora.trim()] = { nombre: nombre.trim(), imagen: imagen.trim() };
+        });
+      } catch (e) {
+        console.error("Error cargando rutina.csv:", e);
+      }
+    }
+
+    function actualizarReloj() {
+      const ahora = new Date();
+      const horas = String(ahora.getHours()).padStart(2, '0');
+      const minutos = String(ahora.getMinutes()).padStart(2, '0');
+      const segundos = String(ahora.getSeconds()).padStart(2, '0');
+      const horaActual = `${horas}:${minutos}`;
+
+      document.getElementById('clock').textContent = `${horas}:${minutos}:${segundos}`;
+
+      if (rutina[horaActual]) {
+        const actividad = rutina[horaActual];
+        document.getElementById('activity-name').textContent = actividad.nombre;
+        document.getElementById('activity-img').src = actividad.imagen;
+
+        if (ultimaActividad !== horaActual) {
+          reproducirAlarma();
+          ultimaActividad = horaActual;
+        }
+      }
+
+      mostrarProximaActividad(ahora);
+    }
+
+    function reproducirAlarma() {
+      const audio = document.getElementById('alarm-sound');
+      audio.currentTime = 0;
+      audio.play();
+      if ("vibrate" in navigator) {
+        navigator.vibrate([500, 200, 500]);
+      }
+    }
+
+    function mostrarProximaActividad(ahora) {
+      const horasRutina = Object.keys(rutina).sort();
+      let siguiente = null;
+      for (let h of horasRutina) {
+        const [hh, mm] = h.split(":").map(Number);
+        const fechaActividad = new Date(ahora);
+        fechaActividad.setHours(hh, mm, 0, 0);
+        if (fechaActividad > ahora) {
+          siguiente = { hora: h, ...rutina[h] };
+          break;
+        }
+      }
+
+      const divNext = document.getElementById("next-activity");
+      if (siguiente) {
+        const [hh, mm] = siguiente.hora.split(":").map(Number);
+        const fechaActividad = new Date(ahora);
+        fechaActividad.setHours(hh, mm, 0, 0);
+        const diffMs = fechaActividad - ahora;
+        const diffMin = Math.floor(diffMs / 60000);
+        const diffH = Math.floor(diffMin / 60);
+        const diffM = diffMin % 60;
+        let tiempoRestante = "";
+        if (diffH > 0) tiempoRestante += `${diffH}h `;
+        tiempoRestante += `${diffM} min`;
+        divNext.textContent = `Próxima: ${siguiente.nombre} en ${tiempoRestante}`;
+      } else {
+        divNext.textContent = "No hay más actividades programadas hoy.";
+      }
+    }
+
+    // 🔹 Arranque
+    cargarRutina().then(() => {
+      setInterval(actualizarReloj, 1000);
+      actualizarReloj();
+    });
+  </script>
+</body>
+</html>
