@@ -32,10 +32,27 @@
       margin-top: 30px;
       color: #0f0;
     }
+    .alarm-test-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 20px;
+      background: #0f0;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .alarm-test-btn:hover {
+      background: #fff600;
+    }
   </style>
 </head>
 <body>
   <div class="clock" id="clock">00:00:00</div>
+
+  <!-- Botón para probar la alarma manualmente -->
+  <button class="alarm-test-btn" onclick="probarAlarma()">Probar Alarma</button>
+
   <div class="activity">
     <img id="activity-img" src="" alt="Actividad">
     <div class="activity-name" id="activity-name">Esperando rutina...</div>
@@ -94,6 +111,11 @@
       }
     }
 
+    // Nueva función para probar la alarma con el botón
+    function probarAlarma() {
+      reproducirAlarma();
+    }
+
     function mostrarProximaActividad(ahora) {
       const horasRutina = Object.keys(rutina).sort();
       let siguiente = null;
@@ -131,4 +153,3 @@
   </script>
 </body>
 </html>
-
